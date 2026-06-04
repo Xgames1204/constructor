@@ -117,6 +117,18 @@ export interface CanvasElement {
   attributes?: Record<string, string>;
   locked?: boolean;
   hidden?: boolean;
+  navigateTo?: string;
+  navigateType?: "url" | "page";
+}
+
+export interface Page {
+  id: string;
+  name: string;
+  slug: string;
+  elements: Record<string, CanvasElement>;
+  rootIds: string[];
+  scripts: PageScript[];
+  globalScripts: PageScript[];
 }
 
 export type BlockCategory =
@@ -188,6 +200,8 @@ export interface ProjectData {
   rootIds: string[];
   scripts: PageScript[];
   globalScripts: PageScript[];
+  pages: Page[];
+  currentPageId: string;
   meta: {
     title: string;
     description: string;
@@ -205,24 +219,38 @@ export interface ProjectData {
   };
 }
 
+const HOME_ROOT: CanvasElement = {
+  id: "root",
+  type: "section",
+  name: "Страница",
+  children: [],
+  parentId: null,
+  positionMode: "relative",
+  styles: {
+    minHeight: "100vh",
+    width: "100%",
+    backgroundColor: "#ffffff",
+    position: "relative",
+  },
+};
+
+export const HOME_PAGE_ID = "page_home";
+
 export const DEFAULT_PROJECT_DATA: ProjectData = {
   version: 1,
-  elements: {
-    root: {
-      id: "root",
-      type: "section",
-      name: "Страница",
-      children: [],
-      parentId: null,
-      positionMode: "relative",
-      styles: {
-        minHeight: "100vh",
-        width: "100%",
-        backgroundColor: "#ffffff",
-        position: "relative",
-      },
+  pages: [
+    {
+      id: HOME_PAGE_ID,
+      name: "Главная",
+      slug: "home",
+      elements: { root: { ...HOME_ROOT } },
+      rootIds: ["root"],
+      scripts: [],
+      globalScripts: [],
     },
-  },
+  ],
+  currentPageId: HOME_PAGE_ID,
+  elements: { root: { ...HOME_ROOT } },
   rootIds: ["root"],
   scripts: [],
   globalScripts: [],

@@ -3,6 +3,7 @@ import { immer } from "zustand/middleware/immer";
 import type {
   CanvasElement,
   ElementType,
+  Page,
   PageScript,
   PositionMode,
   ProjectData,
@@ -10,6 +11,32 @@ import type {
 } from "@/types/editor";
 import { DEFAULT_PROJECT_DATA } from "@/types/editor";
 import { createElement } from "@/lib/element-factory";
+
+function makeRootEl(): CanvasElement {
+  return {
+    id: "root", type: "section", name: "Страница",
+    children: [], parentId: null, positionMode: "relative",
+    styles: { minHeight: "100vh", width: "100%", backgroundColor: "#ffffff", position: "relative" },
+  };
+}
+
+function syncCurrentPageIn(state: { data: ProjectData }) {
+  const idx = state.data.pages.findIndex((p) => p.id === state.data.currentPageId);
+  if (idx < 0) return;
+  state.data.pages[idx].elements = JSON.parse(JSON.stringify(state.data.elements));
+  state.data.pages[idx].rootIds = [...state.data.rootIds];
+  state.data.pages[idx].scripts = JSON.parse(JSON.stringify(state.data.scripts));
+  state.data.pages[idx].globalScripts = JSON.parse(JSON.stringify(state.data.globalScripts));
+}
+
+function loadPage(state: { data: ProjectData; selectedId: string | null }, page: Page) {
+  state.data.elements = JSON.parse(JSON.stringify(page.elements));
+  state.data.rootIds = [...page.rootIds];
+  state.data.scripts = JSON.parse(JSON.stringify(page.scripts ?? []));
+  state.data.globalScripts = JSON.parse(JSON.stringify(page.globalScripts ?? []));
+  state.data.currentPageId = page.id;
+  state.selectedId = null;
+}
 
 interface HistoryEntry {
   data: ProjectData;
@@ -62,6 +89,11 @@ interface EditorState {
   setBlockTarget: (id: string | null) => void;
   updateBlocks: (script: PageScript) => void;
   getGlobalScript: () => PageScript;
+  addPage: () => string;
+  deletePage: (pageId: string) => void;
+  renamePage: (pageId: string, name: string) => void;
+  setPageSlug: (pageId: string, slug: string) => void;
+  switchPage: (pageId: string) => void;
 }
 
 const MAX_HISTORY = 50;
@@ -330,7 +362,16 @@ export const useEditorStore = create<EditorState>()(
     },
     setDirty: (v) => set({ isDirty: v }),
     setSaving: (v) => set({ isSaving: v }),
-    getData: () => get().data,
+    getData: () => {
+      const { data } = get();
+      if (!data.pages?.length) return data;
+      const updatedPages = data.pages.map((p) =>
+        p.id === data.currentPageId
+          ? { ...p, elements: data.elements, rootIds: data.rootIds, scripts: data.scripts, globalScripts: data.globalScripts }
+          : p
+      );
+      return { ...data, pages: updatedPages };
+    },
     setBlockTarget: (id) => set({ blockTargetElementId: id }),
 
     updateBlocks: (script) => {
@@ -354,6 +395,70 @@ export const useEditorStore = create<EditorState>()(
         script = { elementId: target, nodes: [], edges: [] };
       }
       return script;
+    },
+
+    addPage: () => {
+      const id = `page_${Date.now()}`;
+      const slug = `page-${id.slice(-6)}`;
+      const newPage: Page = {
+        id,
+        name: "Новая страница",
+        slug,
+        elements: { root: makeRootEl() },
+        rootIds: ["root"],
+        scripts: [],
+        globalScripts: [],
+      };
+      set((state) => {
+        syncCurrentPageIn(state);
+        state.data.pages.push(newPage);
+        loadPage(state, newPage);
+      });
+      get().pushHistory();
+      return id;
+    },
+
+    deletePage: (pageId) => {
+      const { data } = get();
+      if (data.pages.length <= 1) return;
+      set((state) => {
+        const idx = state.data.pages.findIndex((p) => p.id === pageId);
+        if (idx < 0) return;
+        state.data.pages.splice(idx, 1);
+        if (state.data.currentPageId === pageId) {
+          const next = state.data.pages[Math.max(0, idx - 1)];
+          loadPage(state, next);
+        }
+      });
+      get().pushHistory();
+    },
+
+    renamePage: (pageId, name) => {
+      set((state) => {
+        const page = state.data.pages.find((p) => p.id === pageId);
+        if (page) page.name = name;
+      });
+      set({ isDirty: true });
+    },
+
+    setPageSlug: (pageId, slug) => {
+      set((state) => {
+        const page = state.data.pages.find((p) => p.id === pageId);
+        if (page) page.slug = slug.toLowerCase().replace(/[^a-z0-9-]/g, "-");
+      });
+      get().pushHistory();
+    },
+
+    switchPage: (pageId) => {
+      const { data } = get();
+      if (pageId === data.currentPageId) return;
+      const newPage = data.pages.find((p) => p.id === pageId);
+      if (!newPage) return;
+      set((state) => {
+        syncCurrentPageIn(state);
+        const target = state.data.pages.find((p) => p.id === pageId)!;
+        loadPage(state, target);
+      });
     },
   }))
 );

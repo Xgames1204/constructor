@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 
@@ -21,42 +23,20 @@ export function Logo({
   className,
   surface = "auto",
 }: LogoProps) {
-  const img =
-    surface === "dark" ? (
-      <img
-        src={LOGO_LIGHT}
-        alt="Constructor"
-        width={size}
-        height={size}
-        className={cn("object-contain", className)}
-      />
-    ) : surface === "light" ? (
-      <img
-        src={LOGO_DARK}
-        alt="Constructor"
-        width={size}
-        height={size}
-        className={cn("object-contain", className)}
-      />
-    ) : (
-      <>
-        <img
-          src={LOGO_DARK}
-          alt="Constructor"
-          width={size}
-          height={size}
-          className={cn("object-contain dark:hidden", className)}
-        />
-        <img
-          src={LOGO_LIGHT}
-          alt=""
-          width={size}
-          height={size}
-          aria-hidden
-          className={cn("hidden object-contain dark:block", className)}
-        />
-      </>
-    );
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const isDark = mounted ? resolvedTheme === "dark" : false;
+
+  const logoSrc =
+    surface === "dark"
+      ? LOGO_LIGHT
+      : surface === "light"
+        ? LOGO_DARK
+        : isDark
+          ? LOGO_LIGHT
+          : LOGO_DARK;
 
   const content = (
     <div className="flex items-center gap-2.5">
@@ -64,7 +44,13 @@ export function Logo({
         className="relative inline-flex shrink-0"
         style={{ width: size, height: size }}
       >
-        {img}
+        <img
+          src={logoSrc}
+          alt="Constructor"
+          width={size}
+          height={size}
+          className={cn("object-contain", className)}
+        />
       </span>
       {showText && (
         <span className="text-xl font-bold tracking-tight text-constructor-charcoal dark:text-white">

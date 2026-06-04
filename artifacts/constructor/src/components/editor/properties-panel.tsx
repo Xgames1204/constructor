@@ -224,6 +224,57 @@ function StyleFieldInput({
   );
 }
 
+function NavigationSection({ el }: { el: { id: string; href?: string; navigateTo?: string; navigateType?: "url" | "page" } }) {
+  const updateElement = useEditorStore((s) => s.updateElement);
+  const pages = useEditorStore((s) => s.data.pages ?? []);
+  const navType = el.navigateType ?? "url";
+
+  return (
+    <div className="rounded-lg border border-[var(--border)] p-2">
+      <label className="text-xs font-medium">Навигация</label>
+      <p className="text-[10px] text-[var(--muted)] mb-2">Куда ведёт нажатие на этот элемент</p>
+      <div className="flex gap-1 mb-2">
+        {(["url", "page"] as const).map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => updateElement(el.id, { navigateType: t, navigateTo: undefined, href: undefined } as never)}
+            className={`flex-1 rounded py-1 text-xs border ${
+              navType === t
+                ? "border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-950/30 dark:text-brand-300"
+                : "border-[var(--border)] text-[var(--muted)] hover:bg-black/5"
+            }`}
+          >
+            {t === "url" ? "Внешний URL" : "Страница сайта"}
+          </button>
+        ))}
+      </div>
+      {navType === "url" ? (
+        <input
+          value={el.href || ""}
+          onChange={(e) => updateElement(el.id, { href: e.target.value } as never)}
+          placeholder="https://example.com"
+          className={INPUT_CLS}
+        />
+      ) : (
+        <div className="relative">
+          <select
+            value={el.navigateTo || ""}
+            onChange={(e) => updateElement(el.id, { navigateTo: e.target.value, href: e.target.value } as never)}
+            className="w-full appearance-none rounded-md border border-[var(--border)] bg-[var(--card)] py-1.5 pl-2.5 pr-7 text-xs outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 transition-colors"
+          >
+            <option value="">— выберите страницу —</option>
+            {pages.map((p) => (
+              <option key={p.id} value={p.id}>{p.name} ({p.slug})</option>
+            ))}
+          </select>
+          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--muted)]" />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function PropertiesPanel() {
   const [helpKey, setHelpKey] = useState<string | null>(null);
   const el = useEditorStore((s) =>
@@ -297,6 +348,10 @@ export function PropertiesPanel() {
               placeholder="https://..."
             />
           </div>
+        )}
+
+        {(el.type === "link" || el.type === "button") && (
+          <NavigationSection el={el} />
         )}
 
         <div className="rounded-lg border border-[var(--border)] p-2">

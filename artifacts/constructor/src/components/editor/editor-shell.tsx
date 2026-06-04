@@ -31,6 +31,7 @@ import {
   Eye,
   Layers,
   Monitor,
+  Plus,
   Redo2,
   Save,
   Smartphone,
@@ -39,7 +40,82 @@ import {
   Upload,
   Box,
   Server,
+  X,
 } from "lucide-react";
+
+function PagesBar() {
+  const { data, addPage, deletePage, renamePage, switchPage } = useEditorStore();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+
+  const startEdit = (id: string, name: string) => {
+    setEditingId(id);
+    setEditName(name);
+  };
+
+  const commitEdit = () => {
+    if (editingId && editName.trim()) renamePage(editingId, editName.trim());
+    setEditingId(null);
+  };
+
+  return (
+    <div className="flex h-9 shrink-0 items-center gap-0.5 overflow-x-auto border-b border-[var(--border)] bg-[var(--card)] px-2">
+      {data.pages.map((page) => {
+        const active = page.id === data.currentPageId;
+        return (
+          <div
+            key={page.id}
+            role="tab"
+            aria-selected={active}
+            className={`group relative flex cursor-pointer items-center gap-1 rounded-t-md px-3 py-1.5 text-xs whitespace-nowrap transition-colors ${
+              active
+                ? "bg-[var(--background)] font-medium text-[var(--foreground)] shadow-sm ring-1 ring-[var(--border)]"
+                : "text-[var(--muted)] hover:bg-black/5 hover:text-[var(--foreground)]"
+            }`}
+            onClick={() => { if (!active) switchPage(page.id); }}
+            onDoubleClick={() => startEdit(page.id, page.name)}
+          >
+            {editingId === page.id ? (
+              <input
+                autoFocus
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                onBlur={commitEdit}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") commitEdit();
+                  if (e.key === "Escape") setEditingId(null);
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-24 rounded border border-brand-500 bg-[var(--background)] px-1 py-0.5 text-xs outline-none"
+              />
+            ) : (
+              <span>{page.name}</span>
+            )}
+            {data.pages.length > 1 && (
+              <button
+                type="button"
+                title="Удалить страницу"
+                className="ml-0.5 hidden rounded p-0.5 text-[var(--muted)] hover:bg-red-100 hover:text-red-600 group-hover:flex dark:hover:bg-red-950/40"
+                onClick={(e) => { e.stopPropagation(); deletePage(page.id); }}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+        );
+      })}
+      <button
+        type="button"
+        onClick={() => addPage()}
+        className="ml-1 flex shrink-0 items-center gap-1 rounded px-2 py-1 text-xs text-[var(--muted)] hover:bg-black/5 hover:text-[var(--foreground)]"
+        title="Добавить страницу"
+      >
+        <Plus className="h-3 w-3" />
+        Страница
+      </button>
+    </div>
+  );
+}
 
 function CanvasDropZone() {
   const { setNodeRef, isOver } = useDroppable({ id: "canvas-drop" });
@@ -321,6 +397,8 @@ export function EditorShell({ projectId }: { projectId: string }) {
             )}
           </div>
         </header>
+
+        <PagesBar />
 
         <div className="flex flex-1 overflow-hidden">
           <aside

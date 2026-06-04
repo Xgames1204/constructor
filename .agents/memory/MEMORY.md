@@ -1,0 +1,1 @@
+- [Multi-page store sync](multi-page-sync.md) — data.elements/rootIds always mirror current page; getData() and switchPage() handle the sync

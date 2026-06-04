@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "wouter";
 
 export default function PublishedSitePage() {
-  const { siteId } = useParams<{ siteId: string }>();
+  const { siteId, slug } = useParams<{ siteId: string; slug?: string }>();
   const [html, setHtml] = useState("");
   const [scripts, setScripts] = useState("");
   const [apiBootstrap, setApiBootstrap] = useState("");
@@ -16,12 +16,11 @@ export default function PublishedSitePage() {
       })
       .then((data) => {
         if (!data) return;
-        // rawData comes from the API; render it client-side
         if (data.data) {
-          import("@/lib/site-renderer").then(({ renderProjectBody }) => {
+          import("@/lib/site-renderer").then(({ renderPageBody }) => {
             import("@/lib/utils").then(({ parseProjectData }) => {
               const projectData = parseProjectData(data.data);
-              const rendered = renderProjectBody(projectData, data.siteId || "");
+              const rendered = renderPageBody(projectData, data.siteId || "", slug || "home");
               setHtml(rendered.html);
               setScripts(rendered.scripts);
               setApiBootstrap(rendered.apiBootstrap || "");
@@ -33,7 +32,7 @@ export default function PublishedSitePage() {
           setApiBootstrap(data.apiBootstrap || "");
         }
       });
-  }, [siteId]);
+  }, [siteId, slug]);
 
   if (notFound) {
     return (

@@ -1,4 +1,4 @@
-import type { CanvasElement, ProjectData } from "@/types/editor";
+import type { CanvasElement, Page, ProjectData } from "@/types/editor";
 import { generateScriptFromBlocks } from "./block-codegen";
 
 function stylesToCss(styles: Record<string, string | undefined>): string {
@@ -11,9 +11,15 @@ function stylesToCss(styles: Record<string, string | undefined>): string {
     .join(";");
 }
 
+interface RenderOpts {
+  pages?: Page[];
+  siteId?: string;
+}
+
 function renderElement(
   el: CanvasElement,
-  elements: Record<string, CanvasElement>
+  elements: Record<string, CanvasElement>,
+  opts?: RenderOpts
 ): string {
   if (el.hidden) return "";
 
@@ -34,7 +40,7 @@ function renderElement(
   const childrenHtml = el.children
     .map((cid) => {
       const child = elements[cid];
-      return child ? renderElement(child, elements) : "";
+      return child ? renderElement(child, elements, opts) : "";
     })
     .join("");
 
@@ -45,8 +51,19 @@ function renderElement(
       return `<h2 ${attrs}>${el.content || "Заголовок"}</h2>`;
     case "button":
       return `<button type="button" ${attrs}>${el.content || "Кнопка"}</button>`;
-    case "link":
-      return `<a href="${el.href || "#"}" ${attrs}>${el.content || "Ссылка"}</a>`;
+    case "link": {
+      let href = el.href || "#";
+      if (el.navigateType === "page" && el.navigateTo && opts?.pages && opts?.siteId) {
+        const target = opts.pages.find((p) => p.id === el.navigateTo);
+        if (target) {
+          href =
+            target.slug === "home"
+              ? `/site/${opts.siteId}`
+              : `/site/${opts.siteId}/${target.slug}`;
+        }
+      }
+      return `<a href="${href}" ${attrs}>${el.content || "Ссылка"}</a>`;
+    }
     case "image":
       return `<img src="${el.src || "https://placehold.co/400x300"}" alt="${el.alt || ""}" ${attrs} />`;
     case "input":
@@ -78,8 +95,15 @@ function renderElement(
     case "accordion":
     case "table":
     default:
-      return `<div ${attrs}>${childrenHtml || (el.type === "container" ? "" : "")}</div>`;
+      return `<div ${attrs}>${childrenHtml}</div>`;
   }
+}
+
+function getPageData(data: ProjectData, slug: string) {
+  const targetSlug = slug || "home";
+  const page = data.pages?.find((p) => p.slug === targetSlug) ?? data.pages?.[0];
+  if (page) return { elements: page.elements, rootIds: page.rootIds, scripts: page.scripts ?? [], globalScripts: page.globalScripts ?? [] };
+  return { elements: data.elements, rootIds: data.rootIds, scripts: data.scripts, globalScripts: data.globalScripts };
 }
 
 export function renderProjectToHtml(data: ProjectData): string {
@@ -128,14 +152,29 @@ export function renderProjectBody(
   scripts: string;
   apiBootstrap: string;
 } {
-  const html = data.rootIds
+  return renderPageBody(data, siteId ?? "", "home");
+}
+
+export function renderPageBody(
+  data: ProjectData,
+  siteId: string,
+  slug: string
+): {
+  html: string;
+  scripts: string;
+  apiBootstrap: string;
+} {
+  const page = getPageData(data, slug);
+  const opts: RenderOpts = { pages: data.pages, siteId };
+
+  const html = page.rootIds
     .map((id) => {
-      const el = data.elements[id];
-      return el ? renderElement(el, data.elements) : "";
+      const el = page.elements[id];
+      return el ? renderElement(el, page.elements, opts) : "";
     })
     .join("");
 
-  const allScripts = [...data.globalScripts, ...data.scripts];
+  const allScripts = [...page.globalScripts, ...page.scripts];
   const scripts = allScripts
     .map((s) => generateScriptFromBlocks(s.nodes, s.edges))
     .join("\n");
