@@ -51,8 +51,8 @@ export default function RegisterPage() {
       setError(data.error || "Ошибка");
       return;
     }
-    // Сбрасываем старую сессию, чтобы не перебрасывало в кабинет без входа
-    navigate("/auth/login?registered=1");
+    // Сессия уже создана на сервере — сразу переходим в кабинет
+    navigate("/dashboard");
   };
 
   return (

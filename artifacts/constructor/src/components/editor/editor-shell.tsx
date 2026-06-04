@@ -75,6 +75,7 @@ export function EditorShell({ projectId }: { projectId: string }) {
     setDirty,
     getData,
     addElement,
+    addElementAt,
     undo,
     redo,
     copyElement,
@@ -178,7 +179,13 @@ export function EditorShell({ projectId }: { projectId: string }) {
     const activeData = active.data.current;
 
     if (activeData?.fromPalette && activeData?.type) {
-      if (over) addElement(activeData.type as ElementType, "root");
+      if (!over) return;
+      // Вычисляем позицию дропа относительно холста
+      const canvasRect = over.rect;
+      const ptr = e.activatorEvent as PointerEvent;
+      const relX = (ptr.clientX + delta.x) - canvasRect.left;
+      const relY = (ptr.clientY + delta.y) - canvasRect.top;
+      addElementAt(activeData.type as ElementType, "root", relX, relY);
       return;
     }
 

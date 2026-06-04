@@ -120,7 +120,26 @@ router.post("/verify", async (req, res) => {
 
     await db.delete(emailVerificationsTable).where(eq(emailVerificationsTable.email, email));
 
-    return res.json({ ok: true, message: "Регистрация завершена. Войдите в аккаунт.", userId });
+    // Автоматически создаём сессию — пользователь уже вошёл
+    const sessionId = randomUUID();
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    await db.insert(sessionsTable).values({ id: sessionId, userId, expiresAt });
+
+    res.cookie("session_id", sessionId, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      expires: expiresAt,
+      path: "/",
+    });
+
+    const user = await db.query.usersTable.findFirst({ where: eq(usersTable.id, userId) });
+
+    return res.json({
+      ok: true,
+      message: "Регистрация завершена.",
+      user: user ? { id: user.id, email: user.email, name: user.name, image: user.image } : null,
+    });
   } catch (e) {
     req.log.error(e);
     return res.status(500).json({ error: "Ошибка сервера" });

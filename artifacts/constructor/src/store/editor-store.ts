@@ -42,6 +42,7 @@ interface EditorState {
   setViewport: (v: ViewportMode) => void;
   setPanelTab: (tab: EditorState["panelTab"]) => void;
   addElement: (type: ElementType, parentId?: string) => string;
+  addElementAt: (type: ElementType, parentId: string, x: number, y: number) => string;
   updateElement: (id: string, patch: Partial<CanvasElement>) => void;
   updateStyle: (id: string, key: string, value: string) => void;
   setPositionMode: (id: string, mode: PositionMode) => void;
@@ -146,6 +147,27 @@ export const useEditorStore = create<EditorState>()(
       set((state) => {
         state.data.elements[el.id] = el;
         const parent = state.data.elements[targetParent];
+        if (parent) parent.children.push(el.id);
+        state.selectedId = el.id;
+      });
+      get().pushHistory();
+      return el.id;
+    },
+
+    addElementAt: (type, parentId, x, y) => {
+      const el = createElement(type, parentId);
+      const grid = get().data.settings?.gridSize || 8;
+      const snapped = (v: number) => Math.round(v / grid) * grid;
+      el.positionMode = "absolute";
+      el.styles = {
+        ...el.styles,
+        position: "absolute",
+        left: `${snapped(Math.max(0, x))}px`,
+        top: `${snapped(Math.max(0, y))}px`,
+      };
+      set((state) => {
+        state.data.elements[el.id] = el;
+        const parent = state.data.elements[parentId];
         if (parent) parent.children.push(el.id);
         state.selectedId = el.id;
       });
