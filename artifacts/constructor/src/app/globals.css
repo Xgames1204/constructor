@@ -9,6 +9,41 @@
   --border: #e5e5e5;
   --muted: #737373;
   --accent: #0c8ce9;
+
+  /* Flow editor – светлая тема */
+  --flow-bg:          #f1f5f9;
+  --flow-panel:       #e2e8f0;
+  --flow-border:      #cbd5e1;
+  --flow-text:        #0f172a;
+  --flow-muted:       #64748b;
+  --flow-help-bg:     #eff6ff;
+  --flow-help-border: #bfdbfe;
+  --flow-help-text:   #1d4ed8;
+  --flow-cat-bg:      #e2e8f0;
+  --flow-cat-text:    #475569;
+  --flow-cat-act-bg:  #0c8ce9;
+  --flow-cat-act-txt: #ffffff;
+  --flow-btn-bg:      #e2e8f0;
+  --flow-btn-hover:   #cbd5e1;
+  --flow-btn-text:    #0f172a;
+  --flow-node-bg:     #ffffff;
+  --flow-node-shadow: rgba(0,0,0,0.10);
+  --flow-node-header: #ffffff;
+  --flow-input-bg:    #ffffff;
+  --flow-input-brd:   #94a3b8;
+  --flow-input-text:  #0f172a;
+  --flow-canvas-bg:   #f8fafc;
+  --flow-footer-bg:   #e2e8f0;
+  --flow-footer-brd:  #cbd5e1;
+  --flow-save-bg:     #0c8ce9;
+  --flow-save-hover:  #0284c7;
+  --flow-minimap-bg:  #e2e8f0;
+  --flow-minimap-brd: #cbd5e1;
+  --flow-ctrl-bg:     #e2e8f0;
+  --flow-ctrl-brd:    #cbd5e1;
+  --flow-ctrl-text:   #0f172a;
+  --flow-edge:        #0c8ce9;
+  --flow-handle-brd:  #f1f5f9;
 }
 
 .dark {
@@ -18,6 +53,41 @@
   --border: #262626;
   --muted: #a3a3a3;
   --accent: #36a6f8;
+
+  /* Flow editor – тёмная тема */
+  --flow-bg:          #0f172a;
+  --flow-panel:       #1e293b;
+  --flow-border:      #334155;
+  --flow-text:        #e2e8f0;
+  --flow-muted:       #94a3b8;
+  --flow-help-bg:     #1e3a5f;
+  --flow-help-border: #334155;
+  --flow-help-text:   #bae6fd;
+  --flow-cat-bg:      #334155;
+  --flow-cat-text:    #94a3b8;
+  --flow-cat-act-bg:  #0c8ce9;
+  --flow-cat-act-txt: #ffffff;
+  --flow-btn-bg:      #334155;
+  --flow-btn-hover:   #475569;
+  --flow-btn-text:    #f1f5f9;
+  --flow-node-bg:     #1e293b;
+  --flow-node-shadow: rgba(0,0,0,0.45);
+  --flow-node-header: #ffffff;
+  --flow-input-bg:    #0f172a;
+  --flow-input-brd:   #475569;
+  --flow-input-text:  #f8fafc;
+  --flow-canvas-bg:   #0f172a;
+  --flow-footer-bg:   #1e293b;
+  --flow-footer-brd:  #334155;
+  --flow-save-bg:     #0c8ce9;
+  --flow-save-hover:  #0284c7;
+  --flow-minimap-bg:  #1e293b;
+  --flow-minimap-brd: #475569;
+  --flow-ctrl-bg:     #334155;
+  --flow-ctrl-brd:    #475569;
+  --flow-ctrl-text:   #e2e8f0;
+  --flow-edge:        #38bdf8;
+  --flow-handle-brd:  #0f172a;
 }
 
 html {
@@ -49,10 +119,10 @@ body {
     linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
 }
 
-/* ——— Визуальный редактор блоков (тёмная тема) ——— */
+/* ——— Визуальный редактор блоков ——— */
 .flow-editor-root {
-  background: #0f172a;
-  color: #e2e8f0;
+  background: var(--flow-bg);
+  color: var(--flow-text);
 }
 
 .flow-help-bar {
@@ -60,14 +130,14 @@ body {
   align-items: flex-start;
   gap: 8px;
   padding: 8px 10px;
-  background: #1e3a5f;
-  border-bottom: 1px solid #334155;
-  color: #bae6fd;
+  background: var(--flow-help-bg);
+  border-bottom: 1px solid var(--flow-help-border);
+  color: var(--flow-help-text);
 }
 
 .flow-palette {
-  background: #1e293b;
-  border-bottom: 1px solid #334155;
+  background: var(--flow-panel);
+  border-bottom: 1px solid var(--flow-border);
   max-height: 140px;
   overflow: hidden;
   display: flex;
@@ -79,7 +149,7 @@ body {
   flex-wrap: wrap;
   gap: 4px;
   padding: 6px 8px;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--flow-border);
 }
 
 .flow-cat,
@@ -91,13 +161,13 @@ body {
 }
 
 .flow-cat {
-  background: #334155;
-  color: #94a3b8;
+  background: var(--flow-cat-bg);
+  color: var(--flow-cat-text);
 }
 
 .flow-cat-active {
-  background: #0c8ce9;
-  color: #fff;
+  background: var(--flow-cat-act-bg);
+  color: var(--flow-cat-act-txt);
 }
 
 .flow-block-list {
@@ -113,14 +183,14 @@ body {
   border-radius: 6px;
   font-size: 10px;
   font-weight: 500;
-  background: #334155;
-  color: #f1f5f9;
+  background: var(--flow-btn-bg);
+  color: var(--flow-btn-text);
   border-left: 3px solid;
   text-align: left;
 }
 
 .flow-add-btn:hover {
-  background: #475569;
+  background: var(--flow-btn-hover);
 }
 
 .flow-canvas {
@@ -128,14 +198,14 @@ body {
 }
 
 .flow-react-flow {
-  background: #0f172a !important;
+  background: var(--flow-canvas-bg) !important;
 }
 
 .flow-block-node {
   border-radius: 10px;
   border: 2px solid;
-  background: #1e293b;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  background: var(--flow-node-bg);
+  box-shadow: 0 8px 24px var(--flow-node-shadow);
   font-size: 12px;
   overflow: visible;
 }
@@ -160,7 +230,7 @@ body {
   display: block;
   font-size: 9px;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--flow-muted);
   margin-bottom: 3px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -172,9 +242,9 @@ body {
   width: 100%;
   padding: 6px 8px;
   border-radius: 6px;
-  border: 1px solid #475569;
-  background: #0f172a;
-  color: #f8fafc;
+  border: 1px solid var(--flow-input-brd);
+  background: var(--flow-input-bg);
+  color: var(--flow-input-text);
   font-size: 11px;
 }
 
@@ -186,7 +256,7 @@ body {
 .flow-handle {
   width: 12px !important;
   height: 12px !important;
-  border: 2px solid #0f172a !important;
+  border: 2px solid var(--flow-handle-brd) !important;
 }
 
 .flow-handle-in {
@@ -212,7 +282,7 @@ body {
   right: -22px;
   font-size: 8px;
   font-weight: 700;
-  color: #94a3b8;
+  color: var(--flow-muted);
 }
 
 .flow-handle-label-true {
@@ -225,8 +295,8 @@ body {
 
 .flow-footer {
   padding: 8px;
-  border-top: 1px solid #334155;
-  background: #1e293b;
+  border-top: 1px solid var(--flow-footer-brd);
+  background: var(--flow-footer-bg);
 }
 
 .flow-save-btn {
@@ -237,28 +307,28 @@ body {
   gap: 8px;
   padding: 10px;
   border-radius: 8px;
-  background: #0c8ce9;
+  background: var(--flow-save-bg);
   color: #fff;
   font-size: 12px;
   font-weight: 600;
 }
 
 .flow-save-btn:hover {
-  background: #0284c7;
+  background: var(--flow-save-hover);
 }
 
 .flow-controls button {
-  background: #334155 !important;
-  border-color: #475569 !important;
-  color: #e2e8f0 !important;
+  background: var(--flow-ctrl-bg) !important;
+  border-color: var(--flow-ctrl-brd) !important;
+  color: var(--flow-ctrl-text) !important;
 }
 
 .flow-minimap {
-  background: #1e293b !important;
-  border: 1px solid #475569 !important;
+  background: var(--flow-minimap-bg) !important;
+  border: 1px solid var(--flow-minimap-brd) !important;
 }
 
 .react-flow__edge-path {
-  stroke: #38bdf8 !important;
+  stroke: var(--flow-edge) !important;
   stroke-width: 2px !important;
 }

@@ -22,7 +22,7 @@ import { BlockEditor } from "@/components/blocks/block-editor";
 import { useEditorStore } from "@/store/editor-store";
 import { useAppSettings } from "@/components/providers";
 import { t } from "@/lib/i18n";
-import { getPublishUrl } from "@/lib/utils";
+import { getPublishUrl, parseProjectData } from "@/lib/utils";
 import { renderProjectToHtml } from "@/lib/site-renderer";
 import type { ElementType } from "@/types/editor";
 import {
@@ -105,7 +105,7 @@ export function EditorShell({ projectId }: { projectId: string }) {
       .then((r) => r.json())
       .then((d) => {
         if (d.project) {
-          const data = JSON.parse(d.project.data);
+          const data = parseProjectData(d.project.data);
           init(projectId, d.project.name, data);
           setSiteId(d.project.siteId ?? null);
           if (d.project.siteId) {
