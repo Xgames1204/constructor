@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useEditorStore } from "@/store/editor-store";
 import type { PositionMode } from "@/types/editor";
 import {
@@ -8,7 +8,7 @@ import {
   POSITION_MODE_HINTS,
 } from "@/lib/style-field-meta";
 import { PropertyHelp } from "./property-help";
-import { Copy, Paintbrush, HelpCircle } from "lucide-react";
+import { ChevronDown, Copy, HelpCircle, Paintbrush } from "lucide-react";
 
 const STYLE_GROUPS = [
   {
@@ -112,6 +112,9 @@ const POSITION_MODES: PositionMode[] = [
   "grid",
 ];
 
+const INPUT_CLS =
+  "w-full rounded-md border border-[var(--border)] bg-[var(--card)] px-2 py-1.5 text-xs font-mono outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 transition-colors";
+
 function StyleFieldInput({
   fieldKey,
   value,
@@ -128,6 +131,7 @@ function StyleFieldInput({
     hint: "CSS-свойство",
     placeholder: "",
   };
+  const colorRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-2">
@@ -141,47 +145,80 @@ function StyleFieldInput({
           title="Подробная инструкция"
           className="shrink-0 rounded p-0.5 text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950/40"
         >
-          <HelpCircle className="h-4 w-4" />
+          <HelpCircle className="h-3.5 w-3.5" />
         </button>
       </div>
       <p className="mt-0.5 text-[10px] leading-snug text-[var(--muted)]">
         {meta.hint}
       </p>
+
       {meta.type === "select" && meta.options ? (
-        <select
-          value={value || ""}
-          onChange={(e) => onChange(e.target.value)}
-          className="mt-1.5 w-full rounded border border-[var(--border)] bg-[var(--card)] px-2 py-1.5 text-xs"
-        >
-          <option value="">— не задано —</option>
-          {meta.options.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
+        <div className="relative mt-1.5">
+          <select
+            value={value || ""}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full appearance-none rounded-md border border-[var(--border)] bg-[var(--card)] py-1.5 pl-2.5 pr-7 text-xs outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 transition-colors"
+          >
+            <option value="">— не задано —</option>
+            {meta.options.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--muted)]" />
+        </div>
       ) : meta.type === "color" ? (
-        <div className="mt-1.5 flex gap-2">
+        <div className="mt-1.5 flex items-center gap-1.5">
+          {/* Цветной квадрат — кликает на скрытый input type=color */}
+          <button
+            type="button"
+            onClick={() => colorRef.current?.click()}
+            title="Открыть выбор цвета"
+            className="h-7 w-7 shrink-0 rounded-md border-2 border-[var(--border)] shadow-sm transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-brand-500/40"
+            style={{ backgroundColor: value || "#000000" }}
+          />
           <input
+            ref={colorRef}
             type="color"
             value={value?.startsWith("#") && value.length >= 4 ? value : "#000000"}
             onChange={(e) => onChange(e.target.value)}
-            className="h-8 w-10 shrink-0 cursor-pointer rounded border border-[var(--border)]"
+            className="sr-only"
           />
           <input
             value={value || ""}
             onChange={(e) => onChange(e.target.value)}
-            placeholder={meta.placeholder}
-            className="min-w-0 flex-1 rounded border border-[var(--border)] bg-[var(--card)] px-2 py-1 text-xs font-mono"
+            placeholder={meta.placeholder || "#000000 / rgba(...)"}
+            className={`${INPUT_CLS} flex-1`}
           />
         </div>
       ) : (
-        <input
-          value={value || ""}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={meta.placeholder || "например: 16px"}
-          className="mt-1.5 w-full rounded border border-[var(--border)] bg-[var(--card)] px-2 py-1.5 text-xs font-mono"
-        />
+        <>
+          <input
+            value={value || ""}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={meta.placeholder || "например: 16px"}
+            className={`mt-1.5 ${INPUT_CLS}`}
+          />
+          {meta.presets && meta.presets.length > 0 && (
+            <div className="mt-1.5 flex flex-wrap gap-1">
+              {meta.presets.map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => onChange(p)}
+                  className={`rounded px-1.5 py-0.5 text-[10px] transition-colors ${
+                    value === p
+                      ? "bg-brand-600 text-white"
+                      : "bg-[var(--card)] border border-[var(--border)] text-[var(--muted)] hover:border-brand-400 hover:text-brand-600"
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

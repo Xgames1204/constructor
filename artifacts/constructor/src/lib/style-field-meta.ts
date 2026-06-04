@@ -5,6 +5,7 @@ export interface StyleFieldMeta {
   unit?: string;
   type?: "text" | "select" | "color";
   options?: { value: string; label: string }[];
+  presets?: string[];
 }
 
 export const STYLE_FIELD_META: Record<string, StyleFieldMeta> = {
@@ -12,16 +13,18 @@ export const STYLE_FIELD_META: Record<string, StyleFieldMeta> = {
     label: "Ширина",
     hint: "Ширина блока. Примеры: 100%, 320px, auto",
     placeholder: "100%",
+    presets: ["auto", "100%", "50%", "fit-content", "100vw", "320px", "480px", "768px", "1200px"],
   },
   height: {
     label: "Высота",
     hint: "Высота блока. Примеры: auto, 200px, 100vh",
     placeholder: "auto",
+    presets: ["auto", "100%", "100vh", "50vh", "200px", "400px", "600px", "fit-content"],
   },
-  minWidth: { label: "Мин. ширина", hint: "Минимальная ширина", placeholder: "0" },
-  maxWidth: { label: "Макс. ширина", hint: "Максимальная ширина", placeholder: "1200px" },
-  minHeight: { label: "Мин. высота", hint: "Минимальная высота", placeholder: "0" },
-  maxHeight: { label: "Макс. высота", hint: "Максимальная высота", placeholder: "none" },
+  minWidth: { label: "Мин. ширина", hint: "Минимальная ширина", placeholder: "0", presets: ["0", "200px", "320px", "480px"] },
+  maxWidth: { label: "Макс. ширина", hint: "Максимальная ширина", placeholder: "1200px", presets: ["none", "640px", "768px", "1024px", "1200px", "1440px"] },
+  minHeight: { label: "Мин. высота", hint: "Минимальная высота", placeholder: "0", presets: ["0", "100px", "200px", "100vh"] },
+  maxHeight: { label: "Макс. высота", hint: "Максимальная высота", placeholder: "none", presets: ["none", "200px", "400px", "100vh"] },
   margin: {
     label: "Внешний отступ (все стороны)",
     hint: "Отступ снаружи элемента. Пример: 16px или 10px 20px",
@@ -35,6 +38,7 @@ export const STYLE_FIELD_META: Record<string, StyleFieldMeta> = {
     label: "Внутренний отступ (все стороны)",
     hint: "Пространство внутри блока. Пример: 24px",
     placeholder: "0",
+    presets: ["0", "4px", "8px", "12px", "16px", "24px", "32px", "48px"],
   },
   paddingTop: { label: "Внутр. отступ сверху", hint: "Padding сверху", placeholder: "0" },
   paddingRight: { label: "Внутр. отступ справа", hint: "Padding справа", placeholder: "0" },
@@ -91,6 +95,7 @@ export const STYLE_FIELD_META: Record<string, StyleFieldMeta> = {
     label: "Размер шрифта",
     hint: "Размер текста",
     placeholder: "16px",
+    presets: ["12px", "14px", "16px", "18px", "20px", "24px", "32px", "40px", "48px", "64px"],
   },
   fontWeight: {
     label: "Жирность",
@@ -175,6 +180,7 @@ export const STYLE_FIELD_META: Record<string, StyleFieldMeta> = {
     label: "Скругление углов",
     hint: "Радиус всех углов. Пример: 8px",
     placeholder: "0",
+    presets: ["0", "4px", "6px", "8px", "12px", "16px", "24px", "50%", "9999px"],
   },
   borderTopLeftRadius: { label: "Скругление ↖", hint: "Левый верхний угол", placeholder: "0" },
   borderTopRightRadius: { label: "Скругление ↗", hint: "Правый верхний угол", placeholder: "0" },
@@ -235,7 +241,7 @@ export const STYLE_FIELD_META: Record<string, StyleFieldMeta> = {
     ],
     hint: "Для flex-контейнера",
   },
-  gap: { label: "Зазор (gap)", hint: "Расстояние между дочерними элементами", placeholder: "8px" },
+  gap: { label: "Зазор (gap)", hint: "Расстояние между дочерними элементами", placeholder: "8px", presets: ["0", "4px", "8px", "12px", "16px", "24px", "32px"] },
   gridTemplateColumns: {
     label: "Колонки grid",
     hint: "Пример: 1fr 1fr или repeat(3, 1fr)",
@@ -260,6 +266,7 @@ export const STYLE_FIELD_META: Record<string, StyleFieldMeta> = {
     label: "Прозрачность",
     hint: "От 0 (невидим) до 1 (полностью видим)",
     placeholder: "1",
+    presets: ["0", "0.25", "0.5", "0.75", "1"],
   },
   filter: { label: "Фильтр", hint: "Пример: blur(4px)", placeholder: "none" },
   backdropFilter: { label: "Размытие фона", hint: "Пример: blur(8px)", placeholder: "none" },
