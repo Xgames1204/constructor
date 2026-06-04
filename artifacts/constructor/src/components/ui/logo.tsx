@@ -24,7 +24,7 @@ export function Logo({
   const img =
     surface === "dark" ? (
       <img
-        src={LOGO_DARK}
+        src={LOGO_LIGHT}
         alt="Constructor"
         width={size}
         height={size}
@@ -32,7 +32,7 @@ export function Logo({
       />
     ) : surface === "light" ? (
       <img
-        src={LOGO_LIGHT}
+        src={LOGO_DARK}
         alt="Constructor"
         width={size}
         height={size}
@@ -41,14 +41,14 @@ export function Logo({
     ) : (
       <>
         <img
-          src={LOGO_LIGHT}
+          src={LOGO_DARK}
           alt="Constructor"
           width={size}
           height={size}
           className={cn("object-contain dark:hidden", className)}
         />
         <img
-          src={LOGO_DARK}
+          src={LOGO_LIGHT}
           alt=""
           width={size}
           height={size}
