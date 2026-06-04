@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "XEMENS Constructor"
+version = "1.0.0"
+id = "artifacts/constructor"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25638
+
+[services.development]
+run = "pnpm --filter @workspace/constructor run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/constructor", "run", "build" ]
+publicDir = "artifacts/constructor/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25638"
+BASE_PATH = "/"
