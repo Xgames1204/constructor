@@ -17,10 +17,10 @@ export default function PublishedSitePage() {
       .then((data) => {
         if (!data) return;
         // rawData comes from the API; render it client-side
-        if (data.rawData) {
+        if (data.data) {
           import("@/lib/site-renderer").then(({ renderProjectBody }) => {
             import("@/lib/utils").then(({ parseProjectData }) => {
-              const projectData = parseProjectData(data.rawData);
+              const projectData = parseProjectData(data.data);
               const rendered = renderProjectBody(projectData, data.siteId || "");
               setHtml(rendered.html);
               setScripts(rendered.scripts);

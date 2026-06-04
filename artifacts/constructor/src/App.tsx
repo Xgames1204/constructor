@@ -33,7 +33,7 @@ function Router() {
       <Route path="/dashboard/settings">
         {() => <ProtectedRoute component={SettingsPage} />}
       </Route>
-      <Route path="/editor/:id">
+      <Route path="/editor/:projectId">
         {() => <ProtectedRoute component={EditorPage} />}
       </Route>
       <Route path="/site/:siteId" component={SitePage} />

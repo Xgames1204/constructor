@@ -61,11 +61,37 @@ router.post("/projects", async (req, res) => {
     const name = req.body?.name || "Новый сайт";
     const id = randomUUID();
 
+    const defaultData = {
+      version: 1,
+      elements: {
+        root: {
+          id: "root",
+          type: "section",
+          name: "Страница",
+          children: [],
+          parentId: null,
+          positionMode: "relative",
+          styles: {
+            minHeight: "100vh",
+            width: "100%",
+            backgroundColor: "#ffffff",
+            position: "relative",
+          },
+        },
+      },
+      rootIds: ["root"],
+      scripts: [],
+      globalScripts: [],
+      meta: { title: name, description: "", lang: "ru" },
+      settings: { canvasWidth: 1200, gridSize: 8, snapToGrid: true },
+      server: { enabled: false, endpoints: [] },
+    };
+
     await db.insert(projectsTable).values({
       id,
       userId: user.id,
       name,
-      data: JSON.stringify({ elements: {}, rootIds: [], server: { enabled: false, endpoints: [] } }),
+      data: JSON.stringify(defaultData),
     });
 
     const project = await db.query.projectsTable.findFirst({ where: eq(projectsTable.id, id) });
@@ -177,7 +203,7 @@ router.get("/site/:siteId", async (req, res) => {
 
     if (!project) return res.status(404).json({ error: "Not found" });
     // Return raw data; the frontend will render it using the site-renderer lib
-    return res.json({ rawData: project.data, siteId: project.siteId });
+    return res.json({ data: project.data, siteId: project.siteId });
   } catch (e) {
     req.log.error(e);
     return res.status(500).json({ error: "Ошибка сервера" });
