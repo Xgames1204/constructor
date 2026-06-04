@@ -313,6 +313,7 @@ export const useEditorStore = create<EditorState>()(
 
     updateBlocks: (script) => {
       set((state) => {
+        if (!Array.isArray(state.data.globalScripts)) state.data.globalScripts = [];
         const idx = state.data.globalScripts.findIndex(
           (s) => s.elementId === script.elementId
         );
@@ -325,7 +326,8 @@ export const useEditorStore = create<EditorState>()(
     getGlobalScript: () => {
       const { data, blockTargetElementId } = get();
       const target = blockTargetElementId || "global";
-      let script = data.globalScripts.find((s) => s.elementId === target);
+      const scripts = Array.isArray(data.globalScripts) ? data.globalScripts : [];
+      let script = scripts.find((s) => s.elementId === target);
       if (!script) {
         script = { elementId: target, nodes: [], edges: [] };
       }

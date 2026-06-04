@@ -24,8 +24,18 @@ export function parseProjectData(raw: string): ProjectData {
   try {
     const parsed = JSON.parse(raw) as ProjectData;
     if (parsed.elements && parsed.rootIds) {
-      if (!parsed.server) {
-        parsed.server = { enabled: false, endpoints: [] };
+      if (!parsed.server) parsed.server = { enabled: false, endpoints: [] };
+      if (!Array.isArray(parsed.scripts)) parsed.scripts = [];
+      if (!Array.isArray(parsed.globalScripts)) parsed.globalScripts = [];
+      if (!parsed.meta) parsed.meta = { title: "Мой сайт", description: "", lang: "ru" };
+      if (!parsed.settings) parsed.settings = { canvasWidth: 1200, gridSize: 8, snapToGrid: true };
+      if (!parsed.elements.root) {
+        parsed.elements.root = {
+          id: "root", type: "section", name: "Страница",
+          children: [], parentId: null, positionMode: "relative",
+          styles: { minHeight: "100vh", width: "100%", backgroundColor: "#ffffff", position: "relative" },
+        };
+        if (!parsed.rootIds.includes("root")) parsed.rootIds.unshift("root");
       }
       return parsed;
     }
