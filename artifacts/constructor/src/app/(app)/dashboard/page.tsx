@@ -57,7 +57,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-[var(--background)]">
       <header className="border-b border-[var(--border)] bg-[var(--card)]">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <Logo size={36} href="/dashboard" />
+          <Logo size={28} href="/dashboard" />
           <div className="flex items-center gap-4">
             <span className="hidden text-sm text-[var(--muted)] sm:block">
               {session?.user?.email}

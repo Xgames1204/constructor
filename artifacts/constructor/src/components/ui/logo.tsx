@@ -53,7 +53,11 @@ export function Logo({
         />
       </span>
       {showText && (
-        <span className="text-xl font-bold tracking-tight text-constructor-charcoal dark:text-white">
+        <span
+          className={`font-bold tracking-tight text-constructor-charcoal dark:text-white ${
+            size <= 24 ? "text-sm" : size <= 32 ? "text-base" : size <= 40 ? "text-lg" : "text-xl"
+          }`}
+        >
           Constructor
         </span>
       )}

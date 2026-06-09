@@ -25,7 +25,7 @@ export default function SettingsPage() {
           <Link href="/dashboard" className="rounded-lg p-2 hover:bg-black/5 dark:hover:bg-white/10">
             <ArrowLeft className="h-5 w-5" />
           </Link>
-          <Logo size={32} href="/dashboard" />
+          <Logo size={24} href="/dashboard" />
         </div>
       </header>
 

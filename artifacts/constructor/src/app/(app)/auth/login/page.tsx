@@ -40,7 +40,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen">
       <div className="hidden w-1/2 flex-col justify-between bg-gradient-to-br from-brand-600 to-brand-900 p-12 text-white lg:flex">
-        <Logo size={48} surface="dark" href="/" />
+        <Logo size={32} surface="dark" href="/" />
         <div>
           <h1 className="text-4xl font-bold">Добро пожаловать в Constructor</h1>
           <p className="mt-4 text-brand-100">

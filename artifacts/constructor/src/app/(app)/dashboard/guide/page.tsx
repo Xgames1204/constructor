@@ -24,22 +24,36 @@ import {
   Paintbrush,
 } from "lucide-react";
 
+const Screenshot = ({ src, alt }: { src: string; alt: string }) => (
+  <div className="overflow-hidden rounded-xl border border-[var(--border)] shadow-md">
+    <img src={src} alt={alt} className="w-full object-cover" />
+  </div>
+);
+
 const STEPS = [
   {
     id: "start",
     icon: BookOpen,
     title: "1. Начало работы",
-    text: "После входа откройте «Мои проекты» и нажмите «Новый проект». Откроется редактор с пустой страницей — это ваш холст.",
-    visual: <MockDashboard />,
+    text: "Откройте сайт и нажмите «Начать бесплатно». После входа в кабинете нажмите «Новый проект» — откроется редактор с пустым холстом.",
+    visual: (
+      <div className="space-y-3">
+        <Screenshot src="/guide/screen-landing.jpg" alt="Главная страница Constructor" />
+        <div className="grid grid-cols-2 gap-3">
+          <Screenshot src="/guide/screen-login.jpg" alt="Экран входа" />
+          <MockDashboard />
+        </div>
+      </div>
+    ),
     tip: "Проекты сохраняются автоматически каждые 3 секунды (можно отключить в настройках).",
   },
   {
     id: "elements",
     icon: MousePointer2,
     title: "2. Элементы и перетаскивание",
-    text: "Слева вкладка «Блоки» — перетащите текст, кнопку, изображение или контейнер на серую область (холст). Кликните элемент, чтобы выделить его. Перетаскивайте выделенный элемент мышью — позиция сохранится (для точности включите «Привязка к сетке» в настройках).",
+    text: "Слева вкладка «Блоки» — перетащите текст, кнопку, изображение или контейнер на серую область (холст). Кликните элемент, чтобы выделить его. Перетаскивайте выделенный элемент мышью — позиция сохранится.",
     visual: <MockEditorLayout />,
-    tip: "Если элемент «прыгает» назад — переключите позиционирование на absolute в панели справа.",
+    tip: "Для точного позиционирования включите «Привязка к сетке» в настройках. Если элемент «прыгает» назад — переключите позиционирование на absolute в панели справа.",
   },
   {
     id: "children",
@@ -126,20 +140,20 @@ export default function GuidePage() {
           >
             <ArrowLeft className="h-5 w-5" />
           </Link>
-          <Logo size={32} href="/dashboard" />
+          <Logo size={24} href="/dashboard" />
         </div>
       </header>
 
       <main className="mx-auto max-w-4xl px-6 py-10">
-        <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-start gap-6">
-          <Logo size={72} href="/dashboard" />
-          <div>
-            <h1 className="text-3xl font-bold">Руководство по Constructor</h1>
-            <p className="mt-2 text-[var(--muted)]">
-              Пошаговые инструкции с наглядными схемами интерфейса. Подходит для
-              начинающих и для тех, кто хочет освоить сервер и скрипты.
-            </p>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <Logo size={28} href="/dashboard" />
+            <h1 className="text-3xl font-bold">Руководство</h1>
           </div>
+          <p className="text-[var(--muted)] max-w-2xl">
+            Пошаговые инструкции с наглядными схемами интерфейса. Подходит для
+            начинающих и для тех, кто хочет освоить сервер и скрипты.
+          </p>
         </div>
 
         <nav className="mt-10 flex flex-wrap gap-2">

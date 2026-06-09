@@ -1,8 +1,15 @@
 "use client";
 
-import { useDraggable } from "@dnd-kit/core";
+import { useCallback } from "react";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { useEditorStore } from "@/store/editor-store";
 import { cn } from "@/lib/utils";
+
+/** Типы элементов, способных принимать дочерние элементы */
+const CONTAINER_TYPES = new Set([
+  "container", "section", "card", "navbar", "footer",
+  "form", "accordion", "tabs",
+]);
 
 interface Props {
   elementId: string;
@@ -24,11 +31,27 @@ export function CanvasElementView({ elementId, isPreview }: Props) {
   const select = useEditorStore((s) => s.select);
   const hover = useEditorStore((s) => s.hover);
 
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+  const isContainerEl = !isPreview && CONTAINER_TYPES.has(element?.type ?? "");
+
+  const { attributes, listeners, setNodeRef: setDragRef, transform, isDragging } = useDraggable({
     id: elementId,
     data: { elementId },
     disabled: !element || element.locked || isPreview,
   });
+
+  const { setNodeRef: setDropRef, isOver: isDropOver } = useDroppable({
+    id: `el-drop-${elementId}`,
+    data: { containerId: elementId },
+    disabled: !isContainerEl,
+  });
+
+  const setRef = useCallback(
+    (node: HTMLElement | null) => {
+      setDragRef(node);
+      setDropRef(node);
+    },
+    [setDragRef, setDropRef]
+  );
 
   if (!element) return null;
 
@@ -74,19 +97,37 @@ export function CanvasElementView({ elementId, isPreview }: Props) {
     <span
       {...listeners}
       {...attributes}
-      className="absolute -top-6 left-0 z-10 cursor-move rounded bg-brand-600 px-1.5 py-0.5 text-[10px] text-white opacity-0 group-hover:opacity-100 [.ring-brand-500~&]:opacity-100"
+      className="absolute -top-6 left-0 z-10 cursor-move rounded bg-brand-600 px-1.5 py-0.5 text-[10px] text-white opacity-0 group-hover:opacity-100"
     >
-      ⋮⋮
+      ⋮⋮ {element.name}
+    </span>
+  );
+
+  /** Визуальный индикатор зоны вставки для контейнеров */
+  const dropIndicator = isContainerEl && isDropOver && !isPreview && (
+    <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-[inherit] bg-brand-50/40 ring-2 ring-brand-400 ring-inset dark:bg-brand-900/20">
+      <span className="rounded-full bg-brand-600 px-3 py-1 text-xs font-medium text-white shadow-lg">
+        ↓ Отпустите для вставки
+      </span>
+    </div>
+  );
+
+  /** Подсказка в пустом контейнере */
+  const emptyHint = isContainerEl && !children.length && !isPreview && !isDropOver && (
+    <span className="pointer-events-none block py-2 text-center text-[10px] text-slate-400/60">
+      Перетащите элемент сюда
     </span>
   );
 
   const wrap = (content: React.ReactNode, Tag: React.ElementType = "div") => {
     const El = Tag;
     return (
-      <El ref={setNodeRef} {...commonProps}>
+      <El ref={setRef} {...commonProps}>
         {dragHandle}
+        {dropIndicator}
         {content}
         {children}
+        {emptyHint}
       </El>
     );
   };

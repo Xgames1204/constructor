@@ -152,6 +152,7 @@ export function EditorShell({ projectId }: { projectId: string }) {
     getData,
     addElement,
     addElementAt,
+    reparentElement,
     undo,
     redo,
     copyElement,
@@ -256,7 +257,13 @@ export function EditorShell({ projectId }: { projectId: string }) {
 
     if (activeData?.fromPalette && activeData?.type) {
       if (!over) return;
-      // Вычисляем позицию дропа относительно холста
+      // Проверяем: дропнули ли на контейнер-элемент?
+      const overContainerId = over.data.current?.containerId as string | undefined;
+      if (overContainerId && over.id !== "canvas-drop") {
+        addElement(activeData.type as ElementType, overContainerId);
+        return;
+      }
+      // Иначе — вставляем на холст с абсолютной позицией
       const canvasRect = over.rect;
       const ptr = e.activatorEvent as PointerEvent;
       const relX = (ptr.clientX + delta.x) - canvasRect.left;
@@ -269,7 +276,21 @@ export function EditorShell({ projectId }: { projectId: string }) {
     if (elementId.startsWith("palette-") || elementId === "root") return;
 
     const el = useEditorStore.getState().data.elements[elementId];
-    if (!el || el.locked || (delta.x === 0 && delta.y === 0)) return;
+    if (!el || el.locked) return;
+
+    // Перемещение существующего элемента в другой контейнер
+    const overContainerId = over?.data.current?.containerId as string | undefined;
+    if (
+      overContainerId &&
+      over?.id !== "canvas-drop" &&
+      overContainerId !== elementId &&
+      overContainerId !== el.parentId
+    ) {
+      reparentElement(elementId, overContainerId);
+      return;
+    }
+
+    if (delta.x === 0 && delta.y === 0) return;
 
     const parsePx = (v?: string) => {
       if (!v) return 0;

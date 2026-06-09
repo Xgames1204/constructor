@@ -58,7 +58,7 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-screen">
       <div className="hidden w-1/2 flex-col justify-between bg-gradient-to-br from-constructor-charcoal to-neutral-900 p-12 text-white lg:flex">
-        <Logo size={48} surface="dark" href="/" />
+        <Logo size={32} surface="dark" href="/" />
         <div>
           <h1 className="text-4xl font-bold">Создайте аккаунт</h1>
           <p className="mt-4 text-neutral-400">

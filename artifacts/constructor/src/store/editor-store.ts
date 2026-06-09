@@ -77,6 +77,7 @@ interface EditorState {
   duplicateElement: (id: string) => void;
   moveElement: (id: string, x: number, y: number) => void;
   reorderChild: (parentId: string, childId: string, index: number) => void;
+  reparentElement: (id: string, newParentId: string) => void;
   copyElement: (id: string) => void;
   pasteElement: (parentId?: string) => void;
   copyStyles: (id: string) => void;
@@ -304,6 +305,28 @@ export const useEditorStore = create<EditorState>()(
         if (!parent) return;
         parent.children = parent.children.filter((c) => c !== childId);
         parent.children.splice(index, 0, childId);
+      });
+      get().pushHistory();
+    },
+
+    reparentElement: (id, newParentId) => {
+      if (id === "root" || id === newParentId) return;
+      set((state) => {
+        const el = state.data.elements[id];
+        const newParent = state.data.elements[newParentId];
+        if (!el || !newParent) return;
+        if (el.parentId) {
+          const oldParent = state.data.elements[el.parentId];
+          if (oldParent) oldParent.children = oldParent.children.filter((c) => c !== id);
+        } else {
+          state.data.rootIds = state.data.rootIds.filter((rid) => rid !== id);
+        }
+        newParent.children.push(id);
+        el.parentId = newParentId;
+        el.positionMode = "relative";
+        el.styles = { ...el.styles, position: "relative" };
+        delete el.styles.left;
+        delete el.styles.top;
       });
       get().pushHistory();
     },
