@@ -12,6 +12,7 @@ import {
   Trash2,
   LogOut,
   BookOpen,
+  FileText,
 } from "lucide-react";
 
 interface Project {
@@ -67,7 +68,14 @@ export default function DashboardPage() {
               className="flex items-center gap-1.5 rounded-lg border border-brand-200 bg-brand-50 px-3 py-1.5 text-sm font-medium text-brand-700 hover:bg-brand-100 dark:border-brand-800 dark:bg-brand-950/40 dark:text-brand-300"
             >
               <BookOpen className="h-4 w-4" />
-              <span className="hidden sm:inline">Гайд</span>
+              <span className="hidden sm:inline">{t("dashboard.guide", settings.locale)}</span>
+            </Link>
+            <Link
+              href="/dashboard/docs"
+              className="flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-3 py-1.5 text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5"
+            >
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("dashboard.docs", settings.locale)}</span>
             </Link>
             <Link
               href="/dashboard/settings"

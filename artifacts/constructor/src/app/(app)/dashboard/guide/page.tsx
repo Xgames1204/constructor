@@ -1,5 +1,4 @@
 
-
 import { Link } from "wouter";
 
 import { Logo } from "@/components/ui/logo";
@@ -21,7 +20,7 @@ import {
   Server,
   Upload,
   Box,
-  Paintbrush,
+  FileStack,
 } from "lucide-react";
 
 const Screenshot = ({ src, alt }: { src: string; alt: string }) => (
@@ -35,7 +34,7 @@ const STEPS = [
     id: "start",
     icon: BookOpen,
     title: "1. Начало работы",
-    text: "Откройте сайт и нажмите «Начать бесплатно». После входа в кабинете нажмите «Новый проект» — откроется редактор с пустым холстом.",
+    text: "Откройте сайт и нажмите «Начать бесплатно». После регистрации и входа в кабинете нажмите «Новый проект» — откроется редактор с пустым холстом.",
     visual: (
       <div className="space-y-3">
         <Screenshot src="/guide/screen-landing.jpg" alt="Главная страница Constructor" />
@@ -45,69 +44,136 @@ const STEPS = [
         </div>
       </div>
     ),
-    tip: "Проекты сохраняются автоматически каждые 3 секунды (можно отключить в настройках).",
+    tip: "Проекты сохраняются автоматически каждые N секунд (настраивается в Настройки → Редактор → Интервал автосохранения).",
   },
   {
     id: "elements",
     icon: MousePointer2,
     title: "2. Элементы и перетаскивание",
-    text: "Слева вкладка «Блоки» — перетащите текст, кнопку, изображение или контейнер на серую область (холст). Кликните элемент, чтобы выделить его. Перетаскивайте выделенный элемент мышью — позиция сохранится.",
+    text: "Слева вкладка «Блоки» — перетащите текст, кнопку, изображение или контейнер на серую область (холст). Кликните элемент, чтобы выделить его и открыть свойства справа. Перетаскивайте выделенный элемент мышью — позиция сохранится.",
     visual: <MockEditorLayout />,
-    tip: "Для точного позиционирования включите «Привязка к сетке» в настройках. Если элемент «прыгает» назад — переключите позиционирование на absolute в панели справа.",
+    tip: "Для точного позиционирования включите «Привязка к сетке» в настройках. Если элемент «прыгает» назад — переключите позицию на absolute в панели «Позиция» справа.",
+  },
+  {
+    id: "pages",
+    icon: FileStack,
+    title: "3. Несколько страниц",
+    text: "Под шапкой редактора находится полоса страниц. Кликните вкладку страницы, чтобы переключиться на неё — холст перезагрузится. Нажмите «+ Страница» для создания новой. Дважды кликните на вкладку — поле станет редактируемым, можно переименовать страницу. При наведении появляется × для удаления. Чтобы кнопка или ссылка вела с одной страницы на другую — выделите элемент → в панели свойств справа откройте раздел «Навигация» → выберите «Страница сайта» и укажите нужную.",
+    visual: (
+      <div className="space-y-3">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-hidden">
+          <div className="border-b border-[var(--border)] bg-black/5 dark:bg-white/5 flex items-center gap-1 px-3 py-0 text-xs overflow-x-auto">
+            {["Главная", "О нас", "Контакты"].map((name, i) => (
+              <div
+                key={name}
+                className={`shrink-0 cursor-pointer select-none px-3 py-2.5 border-b-2 font-medium transition ${
+                  i === 0
+                    ? "border-brand-500 text-brand-600"
+                    : "border-transparent text-[var(--muted)] hover:text-[var(--foreground)]"
+                }`}
+              >
+                {name}
+              </div>
+            ))}
+            <div className="shrink-0 ml-2 rounded px-2 py-1 text-[var(--muted)] hover:bg-black/10 dark:hover:bg-white/10 cursor-pointer">
+              + Страница
+            </div>
+          </div>
+          <div className="p-4 text-xs text-[var(--muted)] space-y-1">
+            <p>• Активная страница: <strong className="text-[var(--foreground)]">Главная</strong></p>
+            <p>• Дважды кликните на вкладку — переименовать</p>
+            <p>• Наведите на вкладку — появится × для удаления</p>
+          </div>
+        </div>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 text-xs">
+          <p className="font-medium mb-2 text-[var(--foreground)]">Ссылки между страницами</p>
+          <div className="space-y-1 text-[var(--muted)]">
+            <p>Выделите кнопку или ссылку на холсте</p>
+            <p>→ Панель Свойства (справа) → <strong>Навигация</strong></p>
+            <p>→ Выберите «Страница сайта» → укажите страницу</p>
+            <p className="pt-1 text-brand-600 dark:text-brand-400">✓ При публикации адрес подставляется автоматически</p>
+          </div>
+        </div>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 text-xs">
+          <p className="font-medium mb-1 text-[var(--foreground)]">URL страниц после публикации</p>
+          <div className="space-y-0.5 text-[var(--muted)] font-mono">
+            <p>/site/site_482910 <span className="not-italic">→ Главная</span></p>
+            <p>/site/site_482910/about <span className="not-italic">→ О нас</span></p>
+            <p>/site/site_482910/contacts <span className="not-italic">→ Контакты</span></p>
+          </div>
+        </div>
+      </div>
+    ),
+    tip: "Slug в URL — это имя страницы, написанное латиницей в нижнем регистре (автоматически транслитерируется). Чтобы задать его вручную — переименуйте страницу латинскими символами.",
   },
   {
     id: "children",
     icon: Box,
-    title: "3. Дочерние элементы в контейнере (div)",
-    text: "Контейнер — это аналог тега <div>: он группирует другие элементы внутри себя. Чтобы вложить элемент внутрь контейнера, перетащите его из палитры прямо на синюю пунктирную рамку контейнера на холсте. Отпустите — элемент станет дочерним. Вы увидите это в панели «Слои»: он появится вложенным под контейнером.",
+    title: "4. Дочерние элементы в контейнере",
+    text: "Контейнер — это аналог тега <div>: он группирует другие элементы внутри себя. Чтобы вложить элемент внутрь контейнера, перетащите его из палитры прямо на синюю рамку контейнера на холсте. Отпустите — элемент станет дочерним. Вы увидите это в панели «Слои»: он появится вложенным под контейнером.",
     visual: <MockContainerChildren />,
     tip: "Можно вкладывать контейнеры друг в друга сколько угодно. Для выравнивания дочерних элементов установите родителю display: flex в панели «Flex / Grid».",
   },
   {
     id: "styles",
     icon: Palette,
-    title: "4. Стили и рамки",
-    text: "Справа панель «Свойства»: меняйте текст, цвета, отступы, шрифты. Раздел «Границы» управляет рамкой вокруг элемента. Чтобы убрать рамку — нажмите пресет none или выберите стиль «Нет» в поле «Стиль границы». У каждого поля есть кнопка ⓘ — откроется подробная инструкция.",
+    title: "5. Стили и рамки",
+    text: "Справа панель «Свойства»: меняйте текст, цвета, отступы, шрифты. Раздел «Границы» управляет рамкой вокруг элемента. Чтобы убрать рамку — нажмите пресет «none» или выберите стиль «Нет» в поле «Стиль границы». Кнопки «Копировать стили» и «Вставить стили» позволяют перенести оформление с одного элемента на другой.",
     visual: <MockBorderClear />,
-    tip: "Можно копировать стили с одного элемента и вставлять на другой кнопкой «Копировать стили».",
+    tip: "Выделите элемент → «Копировать стили» → выделите другой → «Вставить стили». Экономит время при создании однотипных блоков.",
   },
   {
     id: "layers",
     icon: Layers,
-    title: "5. Слои",
-    text: "Вкладка «Слои» показывает дерево страницы. Скрывайте элементы (глаз), блокируйте от случайных правок (замок), переименовывайте блоки для удобства. Вложенность в дереве точно отражает дочернюю структуру на холсте.",
+    title: "6. Слои",
+    text: "Вкладка «Слои» показывает дерево страницы. Скрывайте элементы (иконка глаза), блокируйте от случайных правок (замок), переименовывайте блоки для удобства двойным кликом по имени. Вложенность в дереве точно отражает дочернюю структуру на холсте.",
     visual: (
       <div className="space-y-1 rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 text-xs">
-        <p className="font-medium">▼ Страница</p>
-        <p className="pl-3">├ Заголовок</p>
-        <p className="pl-3 text-[var(--muted)]">├ Кнопка (скрыт)</p>
-        <p className="pl-3">▼ Контейнер</p>
-        <p className="pl-6">├ Текст</p>
-        <p className="pl-6">└ Изображение</p>
+        <p className="font-medium text-[var(--foreground)]">▼ Страница</p>
+        <div className="pl-3 space-y-1">
+          <p className="flex items-center justify-between">
+            <span>├ Заголовок</span>
+            <span className="text-[var(--muted)]">👁 🔒</span>
+          </p>
+          <p className="flex items-center justify-between text-[var(--muted)]">
+            <span>├ Кнопка <em>(скрыт)</em></span>
+            <span>🔒</span>
+          </p>
+          <div>
+            <p className="flex items-center justify-between">
+              <span>▼ Контейнер</span>
+              <span className="text-[var(--muted)]">👁 🔒</span>
+            </p>
+            <div className="pl-3 space-y-0.5 text-[var(--muted)]">
+              <p>├ Текст</p>
+              <p>└ Изображение</p>
+            </div>
+          </div>
+        </div>
       </div>
     ),
   },
   {
     id: "scripts",
     icon: Blocks,
-    title: "6. Визуальные скрипты",
-    text: "Вкладка «Скрипты» — редактор блоков как в Scratch. Добавьте триггер «При клике», соедините с действиями: изменить цвет, размер, показать/скрыть, HTTP-запрос. Нажмите «Сохранить скрипт».",
+    title: "7. Визуальные скрипты",
+    text: "Вкладка «Скрипты» — редактор блоков как в Scratch. Выделите элемент на холсте, добавьте триггер «При клике» или «При загрузке», соедините с действиями: изменить цвет, размер, показать/скрыть, HTTP-запрос. Нажмите «Сохранить скрипт».",
     visual: <MockBlocksFlow />,
-    tip: "Блоки «Изменить размер», «Изменить цвет», «Плавно изменить стиль» — без написания кода.",
+    tip: "Блоки «Изменить размер», «Изменить цвет», «Плавно изменить стиль» — интерактивность без написания кода.",
   },
   {
     id: "server",
     icon: Server,
-    title: "7. Сервер сайта",
-    text: "Вкладка «Сервер»: включите сервер, создайте endpoint (путь + метод + JSON-ответ). Опубликуйте сайт. В скриптах используйте блок «Запрос к серверу сайта» с тем же путём.",
+    title: "8. Сервер сайта",
+    text: "Вкладка «Сервер»: включите сервер, создайте endpoint (путь + метод + JSON-ответ). Опубликуйте сайт. В скриптах используйте блок «Запрос к серверу сайта» с тем же путём — например /data для GET-запроса.",
     visual: <MockServerPanel />,
-    tip: "URL API появится после публикации — скопируйте его в панели сервера.",
+    tip: "URL API появится после публикации: /api/site/SITEID/ваш-путь. Скопируйте его в блоке скриптов «HTTP-запрос».",
   },
   {
     id: "publish",
     icon: Upload,
-    title: "8. Публикация",
-    text: "Кнопка «Опубликовать» в шапке редактора. Сайт станет доступен по ссылке вида /site/site_123456. Можно экспортировать HTML-файл (иконка загрузки в шапке). Добавляйте дополнительные страницы через «+ Страница» под шапкой редактора — у каждой свой адрес.",
+    title: "9. Публикация",
+    text: "Кнопка «Опубликовать» в шапке редактора. Сайт станет доступен по ссылке вида /site/site_123456. Можно экспортировать HTML-файл (кнопка со стрелкой вниз в шапке). После первой публикации кнопка-глаз открывает сайт в новой вкладке.",
     visual: (
       <div className="space-y-3">
         <div className="rounded-xl bg-brand-600 p-4 text-center text-white">
@@ -118,7 +184,7 @@ const STEPS = [
         </div>
         <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 text-xs">
           <p className="font-medium mb-1 text-[var(--foreground)]">Страницы сайта</p>
-          <div className="space-y-1 text-[var(--muted)]">
+          <div className="space-y-1 text-[var(--muted)] font-mono">
             <p>/site/site_482910 → Главная</p>
             <p>/site/site_482910/about → О нас</p>
             <p>/site/site_482910/contacts → Контакты</p>
@@ -133,14 +199,22 @@ export default function GuidePage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <header className="border-b border-[var(--border)] bg-[var(--card)]">
-        <div className="mx-auto flex h-16 max-w-4xl items-center gap-4 px-6">
+        <div className="mx-auto flex h-16 max-w-4xl items-center justify-between gap-4 px-6">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/dashboard"
+              className="rounded-lg p-2 hover:bg-black/5 dark:hover:bg-white/10"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <Logo size={24} href="/dashboard" />
+          </div>
           <Link
-            href="/dashboard"
-            className="rounded-lg p-2 hover:bg-black/5 dark:hover:bg-white/10"
+            href="/dashboard/docs"
+            className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-black/5 dark:hover:bg-white/5"
           >
-            <ArrowLeft className="h-5 w-5" />
+            Документация →
           </Link>
-          <Logo size={24} href="/dashboard" />
         </div>
       </header>
 
@@ -152,7 +226,7 @@ export default function GuidePage() {
           </div>
           <p className="text-[var(--muted)] max-w-2xl">
             Пошаговые инструкции с наглядными схемами интерфейса. Подходит для
-            начинающих и для тех, кто хочет освоить сервер и скрипты.
+            начинающих и для тех, кто хочет освоить страницы, сервер и скрипты.
           </p>
         </div>
 
@@ -194,15 +268,27 @@ export default function GuidePage() {
           ))}
         </div>
 
-        <div className="mt-12 rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 p-8 text-center text-white">
-          <h3 className="text-xl font-bold">Готовы попробовать?</h3>
-          <p className="mt-2 opacity-90">Создайте проект и откройте редактор</p>
-          <Link
-            href="/dashboard"
-            className="mt-6 inline-block rounded-xl bg-white px-8 py-3 font-semibold text-brand-700 hover:bg-brand-50"
-          >
-            Перейти в кабинет
-          </Link>
+        <div className="mt-12 grid gap-4 sm:grid-cols-2">
+          <div className="rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 p-8 text-center text-white">
+            <h3 className="text-xl font-bold">Готовы попробовать?</h3>
+            <p className="mt-2 opacity-90">Создайте проект и откройте редактор</p>
+            <Link
+              href="/dashboard"
+              className="mt-6 inline-block rounded-xl bg-white px-8 py-3 font-semibold text-brand-700 hover:bg-brand-50"
+            >
+              Перейти в кабинет
+            </Link>
+          </div>
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-8 text-center">
+            <h3 className="text-xl font-bold">Нужна справка?</h3>
+            <p className="mt-2 text-[var(--muted)]">Детальное описание каждой кнопки и панели</p>
+            <Link
+              href="/dashboard/docs"
+              className="mt-6 inline-block rounded-xl border border-brand-300 bg-brand-50 px-8 py-3 font-semibold text-brand-700 hover:bg-brand-100 dark:border-brand-700 dark:bg-brand-950/40 dark:text-brand-300"
+            >
+              Документация
+            </Link>
+          </div>
         </div>
       </main>
     </div>

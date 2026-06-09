@@ -7,6 +7,7 @@ import LoginPage from "@/app/(app)/auth/login/page";
 import RegisterPage from "@/app/(app)/auth/register/page";
 import DashboardPage from "@/app/(app)/dashboard/page";
 import GuidePage from "@/app/(app)/dashboard/guide/page";
+import DocsPage from "@/app/(app)/dashboard/docs/page";
 import SettingsPage from "@/app/(app)/dashboard/settings/page";
 import EditorPage from "@/app/(app)/editor/[projectId]/page";
 import SitePage from "@/app/site/[siteId]/page";
@@ -29,6 +30,9 @@ function Router() {
       </Route>
       <Route path="/dashboard/guide">
         {() => <ProtectedRoute component={GuidePage} />}
+      </Route>
+      <Route path="/dashboard/docs">
+        {() => <ProtectedRoute component={DocsPage} />}
       </Route>
       <Route path="/dashboard/settings">
         {() => <ProtectedRoute component={SettingsPage} />}

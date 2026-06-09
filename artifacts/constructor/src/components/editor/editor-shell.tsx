@@ -210,9 +210,9 @@ export function EditorShell({ projectId }: { projectId: string }) {
 
   useEffect(() => {
     if (!settings.autosave || !isDirty || !loaded) return;
-    const t = setTimeout(save, 3000);
+    const t = setTimeout(save, (settings.autosaveInterval ?? 3) * 1000);
     return () => clearTimeout(t);
-  }, [isDirty, settings.autosave, save, loaded]);
+  }, [isDirty, settings.autosave, settings.autosaveInterval, save, loaded]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
