@@ -184,6 +184,115 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// ── Google OAuth ─────────────────────────────────────────────────────────────
+
+function getGoogleCallbackUrl(): string {
+  if (process.env.GOOGLE_CALLBACK_URL) return process.env.GOOGLE_CALLBACK_URL;
+  const replitDomain = process.env.REPLIT_DEV_DOMAIN;
+  if (replitDomain) return `https://${replitDomain}/api/auth/google/callback`;
+  return `http://localhost:5173/api/auth/google/callback`;
+}
+
+router.get("/google", (_req, res) => {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  if (!clientId) {
+    return res.redirect("/auth/login?error=google_not_configured");
+  }
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: getGoogleCallbackUrl(),
+    response_type: "code",
+    scope: "openid email profile",
+    access_type: "offline",
+    prompt: "select_account",
+  });
+  return res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`);
+});
+
+router.get("/google/callback", async (req, res) => {
+  try {
+    const { code, error } = req.query;
+
+    if (error || !code) {
+      return res.redirect("/auth/login?error=google_cancelled");
+    }
+
+    // Обмен кода на токен
+    const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        code: code as string,
+        client_id: process.env.GOOGLE_CLIENT_ID!,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+        redirect_uri: getGoogleCallbackUrl(),
+        grant_type: "authorization_code",
+      }),
+    });
+    const tokens = await tokenRes.json() as { access_token?: string };
+
+    if (!tokens.access_token) {
+      return res.redirect("/auth/login?error=google_token");
+    }
+
+    // Получаем данные пользователя от Google
+    const userInfoRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+      headers: { Authorization: `Bearer ${tokens.access_token}` },
+    });
+    const googleUser = await userInfoRes.json() as {
+      email?: string; name?: string; picture?: string;
+    };
+
+    if (!googleUser.email) {
+      return res.redirect("/auth/login?error=google_no_email");
+    }
+
+    // Найти или создать пользователя
+    let user = await db.query.usersTable.findFirst({ where: eq(usersTable.email, googleUser.email) });
+
+    if (!user) {
+      const userId = randomUUID();
+      await db.insert(usersTable).values({
+        id: userId,
+        email: googleUser.email,
+        name: googleUser.name || googleUser.email.split("@")[0],
+        image: googleUser.picture ?? null,
+        emailVerified: new Date(),
+      });
+      user = await db.query.usersTable.findFirst({ where: eq(usersTable.id, userId) });
+    } else if (!user.emailVerified) {
+      await db.update(usersTable)
+        .set({ emailVerified: new Date(), image: googleUser.picture ?? user.image, updatedAt: new Date() })
+        .where(eq(usersTable.id, user.id));
+      user = await db.query.usersTable.findFirst({ where: eq(usersTable.id, user.id) });
+    }
+
+    if (!user) {
+      return res.redirect("/auth/login?error=google_user");
+    }
+
+    // Создаём сессию
+    const sessionId = randomUUID();
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    await db.insert(sessionsTable).values({ id: sessionId, userId: user.id, expiresAt });
+
+    res.cookie("session_id", sessionId, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      expires: expiresAt,
+      path: "/",
+    });
+
+    return res.redirect("/dashboard");
+  } catch (e) {
+    req.log.error(e);
+    return res.redirect("/auth/login?error=google_server");
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 router.post("/logout", async (req, res) => {
   try {
     const sessionId = req.cookies?.session_id;

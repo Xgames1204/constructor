@@ -81,11 +81,11 @@ export default function LandingPage() {
       <section id="company" className="border-y border-[var(--border)] bg-[var(--card)] px-6 py-20">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-sm font-semibold uppercase tracking-wider text-brand-600">
-            NexFrame Labs
+            XEMENS
           </p>
           <h2 className="mt-4 text-3xl font-bold">История создателей Constructor</h2>
           <p className="mt-6 text-left text-[var(--muted)] leading-relaxed">
-            Компания <strong className="text-[var(--foreground)]">NexFrame Labs</strong> была
+            Компания <strong className="text-[var(--foreground)]">XEMENS</strong> была
             основана в 2019 году командой инженеров из Санкт-Петербурга и Таллина. Их миссия —
             демократизировать веб-разработку: сделать создание профессиональных сайтов доступным
             каждому, от фрилансера до корпорации. После трёх лет R&amp;D в 2022 году они выпустили
@@ -138,7 +138,7 @@ export default function LandingPage() {
 
       <footer className="border-t border-[var(--border)] px-6 py-8 text-center text-sm text-[var(--muted)]">
         <Logo size={28} href="/" />
-        <p className="mt-4">© {new Date().getFullYear()} NexFrame Labs · Constructor</p>
+        <p className="mt-4">© {new Date().getFullYear()} XEMENS · Constructor</p>
       </footer>
     </div>
   );
