@@ -144,12 +144,6 @@ export function CanvasElementView({ elementId, isPreview }: Props) {
       );
     case "divider":
       return wrap(null, "hr");
-    case "map":
-      return wrap(
-        <div className="flex h-full min-h-[120px] items-center justify-center bg-slate-200 text-sm text-slate-500 dark:bg-slate-800">
-          🗺 {element.content || "Карта"}
-        </div>
-      );
     case "form":
       return wrap(<div className="flex flex-col gap-2">{children}</div>, "form");
     default:

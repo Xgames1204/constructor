@@ -72,10 +72,6 @@ const DEFAULTS: Partial<
     src: "https://www.w3schools.com/html/mov_bbb.mp4",
     styles: { width: "100%", maxWidth: "640px", borderRadius: "8px" },
   },
-  map: {
-    content: "Москва",
-    styles: { width: "100%", height: "300px", border: "none", borderRadius: "8px" },
-  },
   slider: {
     styles: {
       minHeight: "200px",

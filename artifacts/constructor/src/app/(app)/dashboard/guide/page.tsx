@@ -5,6 +5,8 @@ import { Link } from "wouter";
 import { Logo } from "@/components/ui/logo";
 import {
   MockBlocksFlow,
+  MockBorderClear,
+  MockContainerChildren,
   MockDashboard,
   MockEditorLayout,
   MockServerPanel,
@@ -12,13 +14,14 @@ import {
 import {
   ArrowLeft,
   Blocks,
-  HelpCircle,
+  BookOpen,
   Layers,
   MousePointer2,
   Palette,
   Server,
   Upload,
-  BookOpen,
+  Box,
+  Paintbrush,
 } from "lucide-react";
 
 const STEPS = [
@@ -39,43 +42,41 @@ const STEPS = [
     tip: "Если элемент «прыгает» назад — переключите позиционирование на absolute в панели справа.",
   },
   {
+    id: "children",
+    icon: Box,
+    title: "3. Дочерние элементы в контейнере (div)",
+    text: "Контейнер — это аналог тега <div>: он группирует другие элементы внутри себя. Чтобы вложить элемент внутрь контейнера, перетащите его из палитры прямо на синюю пунктирную рамку контейнера на холсте. Отпустите — элемент станет дочерним. Вы увидите это в панели «Слои»: он появится вложенным под контейнером.",
+    visual: <MockContainerChildren />,
+    tip: "Можно вкладывать контейнеры друг в друга сколько угодно. Для выравнивания дочерних элементов установите родителю display: flex в панели «Flex / Grid».",
+  },
+  {
     id: "styles",
     icon: Palette,
-    title: "3. Стили и подсказки",
-    text: "Справа панель «Свойства»: меняйте текст, цвета, отступы, шрифты. У каждого поля есть кнопка ⓘ — откроется подробная инструкция с примерами значений.",
-    visual: (
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Ширина</span>
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-100 text-brand-600">
-            <HelpCircle className="h-5 w-5" />
-          </span>
-        </div>
-        <p className="mt-2 text-xs text-[var(--muted)]">
-          Пример: 100%, 320px, auto — подсказка объяснит подробнее
-        </p>
-      </div>
-    ),
-    tip: "Можно копировать стили с одного элемента и вставлять на другой.",
+    title: "4. Стили и рамки",
+    text: "Справа панель «Свойства»: меняйте текст, цвета, отступы, шрифты. Раздел «Границы» управляет рамкой вокруг элемента. Чтобы убрать рамку — нажмите пресет none или выберите стиль «Нет» в поле «Стиль границы». У каждого поля есть кнопка ⓘ — откроется подробная инструкция.",
+    visual: <MockBorderClear />,
+    tip: "Можно копировать стили с одного элемента и вставлять на другой кнопкой «Копировать стили».",
   },
   {
     id: "layers",
     icon: Layers,
-    title: "4. Слои",
-    text: "Вкладка «Слои» показывает дерево страницы. Скрывайте элементы (глаз), блокируйте от случайных правок (замок), переименовывайте блоки для удобства.",
+    title: "5. Слои",
+    text: "Вкладка «Слои» показывает дерево страницы. Скрывайте элементы (глаз), блокируйте от случайных правок (замок), переименовывайте блоки для удобства. Вложенность в дереве точно отражает дочернюю структуру на холсте.",
     visual: (
       <div className="space-y-1 rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 text-xs">
         <p className="font-medium">▼ Страница</p>
         <p className="pl-3">├ Заголовок</p>
         <p className="pl-3 text-[var(--muted)]">├ Кнопка (скрыт)</p>
-        <p className="pl-3">└ Контейнер</p>
+        <p className="pl-3">▼ Контейнер</p>
+        <p className="pl-6">├ Текст</p>
+        <p className="pl-6">└ Изображение</p>
       </div>
     ),
   },
   {
     id: "scripts",
     icon: Blocks,
-    title: "5. Визуальные скрипты",
+    title: "6. Визуальные скрипты",
     text: "Вкладка «Скрипты» — редактор блоков как в Scratch. Добавьте триггер «При клике», соедините с действиями: изменить цвет, размер, показать/скрыть, HTTP-запрос. Нажмите «Сохранить скрипт».",
     visual: <MockBlocksFlow />,
     tip: "Блоки «Изменить размер», «Изменить цвет», «Плавно изменить стиль» — без написания кода.",
@@ -83,7 +84,7 @@ const STEPS = [
   {
     id: "server",
     icon: Server,
-    title: "6. Сервер сайта",
+    title: "7. Сервер сайта",
     text: "Вкладка «Сервер»: включите сервер, создайте endpoint (путь + метод + JSON-ответ). Опубликуйте сайт. В скриптах используйте блок «Запрос к серверу сайта» с тем же путём.",
     visual: <MockServerPanel />,
     tip: "URL API появится после публикации — скопируйте его в панели сервера.",
@@ -91,14 +92,24 @@ const STEPS = [
   {
     id: "publish",
     icon: Upload,
-    title: "7. Публикация",
-    text: "Кнопка «Опубликовать» в шапке редактора. Сайт станет доступен по ссылке вида /site/site_123456. Можно экспортировать HTML-файл (иконка загрузки в шапке).",
+    title: "8. Публикация",
+    text: "Кнопка «Опубликовать» в шапке редактора. Сайт станет доступен по ссылке вида /site/site_123456. Можно экспортировать HTML-файл (иконка загрузки в шапке). Добавляйте дополнительные страницы через «+ Страница» под шапкой редактора — у каждой свой адрес.",
     visual: (
-      <div className="rounded-xl bg-brand-600 p-4 text-center text-white">
-        <p className="text-sm font-medium">Сайт опубликован!</p>
-        <p className="mt-2 break-all text-xs opacity-90">
-          https://mydomainan.ru/site_482910
-        </p>
+      <div className="space-y-3">
+        <div className="rounded-xl bg-brand-600 p-4 text-center text-white">
+          <p className="text-sm font-medium">Сайт опубликован!</p>
+          <p className="mt-2 break-all text-xs opacity-90">
+            /site/site_482910
+          </p>
+        </div>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 text-xs">
+          <p className="font-medium mb-1 text-[var(--foreground)]">Страницы сайта</p>
+          <div className="space-y-1 text-[var(--muted)]">
+            <p>/site/site_482910 → Главная</p>
+            <p>/site/site_482910/about → О нас</p>
+            <p>/site/site_482910/contacts → Контакты</p>
+          </div>
+        </div>
       </div>
     ),
   },
@@ -121,20 +132,7 @@ export default function GuidePage() {
 
       <main className="mx-auto max-w-4xl px-6 py-10">
         <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-start gap-6">
-          <img
-            src="/logo-light.png"
-            alt="Constructor"
-            width={72}
-            height={72}
-            className="dark:hidden"
-          />
-          <img
-            src="/logo-dark.png"
-            alt=""
-            width={72}
-            height={72}
-            className="hidden dark:block"
-          />
+          <Logo size={72} href="/dashboard" />
           <div>
             <h1 className="text-3xl font-bold">Руководство по Constructor</h1>
             <p className="mt-2 text-[var(--muted)]">
@@ -149,7 +147,7 @@ export default function GuidePage() {
             <a
               key={s.id}
               href={`#${s.id}`}
-              className="rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs hover:border-brand-400"
+              className="rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs hover:border-brand-400 transition-colors"
             >
               {s.title.replace(/^\d+\.\s/, "")}
             </a>

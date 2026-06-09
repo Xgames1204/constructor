@@ -8,7 +8,7 @@ import {
   POSITION_MODE_HINTS,
 } from "@/lib/style-field-meta";
 import { PropertyHelp } from "./property-help";
-import { ChevronDown, Copy, HelpCircle, Paintbrush } from "lucide-react";
+import { ChevronDown, Copy, HelpCircle, Paintbrush, X } from "lucide-react";
 
 const STYLE_GROUPS = [
   {
@@ -401,8 +401,24 @@ export function PropertiesPanel() {
 
         {STYLE_GROUPS.map((group) => (
           <details key={group.title} className="group">
-            <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-              {group.title}
+            <summary className="flex cursor-pointer items-center justify-between text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+              <span>{group.title}</span>
+              {group.title === "Границы" && (
+                <button
+                  type="button"
+                  title="Убрать рамку"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    updateStyle(el.id, "border", "none");
+                    updateStyle(el.id, "borderWidth", "");
+                    updateStyle(el.id, "borderStyle", "none");
+                    updateStyle(el.id, "borderColor", "");
+                  }}
+                  className="ml-2 flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-normal normal-case text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                >
+                  <X className="h-2.5 w-2.5" /> Убрать рамку
+                </button>
+              )}
             </summary>
             <div className="mt-2 space-y-2">
               {group.keys.map((key) => (

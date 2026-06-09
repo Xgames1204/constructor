@@ -11,7 +11,6 @@ export type ElementType =
   | "input"
   | "textarea"
   | "video"
-  | "map"
   | "slider"
   | "divider"
   | "link"

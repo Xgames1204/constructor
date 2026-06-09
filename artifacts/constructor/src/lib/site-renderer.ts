@@ -78,10 +78,8 @@ function renderElement(
       return `<div ${attrs} aria-hidden="true"></div>`;
     case "form":
       return `<form ${attrs}>${childrenHtml}</form>`;
-    case "map":
-      return `<iframe src="https://maps.google.com/maps?q=${encodeURIComponent(el.content || "Moscow")}&output=embed" ${attrs} loading="lazy"></iframe>`;
     case "embed":
-      return `<iframe src="${el.src || ""}" ${attrs} loading="lazy"></iframe>`;
+      return `<iframe src="${el.src || ""}" ${attrs} loading="lazy" allowfullscreen></iframe>`;
     case "slider":
       return `<div ${attrs} class="c-slider">${childrenHtml || '<div class="c-slide">Слайд 1</div>'}</div>`;
     case "list":

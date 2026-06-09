@@ -155,10 +155,11 @@ export const STYLE_FIELD_META: Record<string, StyleFieldMeta> = {
   },
   border: {
     label: "Граница (все стороны)",
-    hint: "Пример: 1px solid #e2e8f0",
+    hint: "Пример: 1px solid #e2e8f0. Выберите 'none' чтобы убрать рамку.",
     placeholder: "none",
+    presets: ["none", "1px solid #e2e8f0", "1px solid #cbd5e1", "2px solid #0c8ce9", "2px dashed #94a3b8", "3px solid #000"],
   },
-  borderWidth: { label: "Толщина границы", hint: "Толщина рамки", placeholder: "1px" },
+  borderWidth: { label: "Толщина границы", hint: "Толщина рамки. 0 — убрать рамку.", placeholder: "1px", presets: ["0", "1px", "2px", "3px", "4px", "8px"] },
   borderStyle: {
     label: "Стиль границы",
     type: "select",

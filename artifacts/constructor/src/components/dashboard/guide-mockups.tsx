@@ -1,4 +1,4 @@
-/** Визуальные схемы интерфейса для гайда (не скриншоты — UI-макеты) */
+/** Визуальные схемы интерфейса для гайда (UI-макеты, имитирующие интерфейс редактора) */
 
 export function MockEditorLayout() {
   return (
@@ -15,7 +15,7 @@ export function MockEditorLayout() {
             Блоки
           </div>
           <div className="space-y-1">
-            {["Текст", "Кнопка", "Изображение"].map((l) => (
+            {["Текст", "Кнопка", "Изображение", "Контейнер"].map((l) => (
               <div
                 key={l}
                 className="truncate rounded border border-[var(--border)] bg-[var(--background)] px-1 py-0.5"
@@ -35,8 +35,127 @@ export function MockEditorLayout() {
           <p className="font-semibold text-[var(--foreground)]">Свойства</p>
           <div className="mt-2 h-4 rounded bg-[var(--background)]" />
           <div className="mt-1 h-4 rounded bg-[var(--background)]" />
+          <div className="mt-1 h-4 w-3/4 rounded bg-[var(--background)]" />
         </div>
       </div>
+    </div>
+  );
+}
+
+export function MockContainerChildren() {
+  return (
+    <div className="space-y-4">
+      {/* Шаг 1: перетащить Контейнер */}
+      <div className="rounded-xl border border-[var(--border)] overflow-hidden text-[10px] shadow">
+        <div className="bg-[var(--card)] border-b border-[var(--border)] px-3 py-1.5 font-medium text-[var(--muted)] flex items-center gap-2">
+          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-brand-600 text-white font-bold text-[9px]">1</span>
+          Перетащите «Контейнер» на холст
+        </div>
+        <div className="flex bg-slate-100 dark:bg-slate-900">
+          {/* Палитра */}
+          <div className="w-20 shrink-0 border-r border-[var(--border)] bg-[var(--card)] p-2 space-y-1">
+            {["Текст", "Кнопка"].map((l) => (
+              <div key={l} className="truncate rounded border border-[var(--border)] bg-[var(--background)] px-1 py-0.5">{l}</div>
+            ))}
+            <div className="truncate rounded border-2 border-brand-500 bg-brand-50 px-1 py-0.5 font-semibold text-brand-700 dark:bg-brand-900/40 dark:text-brand-300">
+              Контейнер ✦
+            </div>
+          </div>
+          {/* Холст */}
+          <div className="flex flex-1 items-center justify-center p-4">
+            <div className="w-full max-w-[120px] rounded-lg border-2 border-dashed border-slate-300 bg-white p-2 dark:bg-slate-950">
+              <p className="text-center text-[var(--muted)]">пусто</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Шаг 2: перетащить дочерний элемент */}
+      <div className="rounded-xl border border-[var(--border)] overflow-hidden text-[10px] shadow">
+        <div className="bg-[var(--card)] border-b border-[var(--border)] px-3 py-1.5 font-medium text-[var(--muted)] flex items-center gap-2">
+          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-brand-600 text-white font-bold text-[9px]">2</span>
+          Перетащите «Текст» прямо на контейнер
+        </div>
+        <div className="flex bg-slate-100 dark:bg-slate-900">
+          <div className="w-20 shrink-0 border-r border-[var(--border)] bg-[var(--card)] p-2 space-y-1">
+            <div className="truncate rounded border-2 border-brand-500 bg-brand-50 px-1 py-0.5 font-semibold text-brand-700 dark:bg-brand-900/40 dark:text-brand-300">
+              Текст ✦
+            </div>
+            {["Кнопка", "Контейнер"].map((l) => (
+              <div key={l} className="truncate rounded border border-[var(--border)] bg-[var(--background)] px-1 py-0.5">{l}</div>
+            ))}
+          </div>
+          <div className="flex flex-1 items-center justify-center p-4">
+            <div className="w-full max-w-[120px] rounded-lg border-2 border-dashed border-brand-400 bg-white p-2 ring-2 ring-brand-400/30 dark:bg-slate-950">
+              <p className="text-brand-600 font-medium">↓ бросьте сюда</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Шаг 3: результат */}
+      <div className="rounded-xl border border-[var(--border)] overflow-hidden text-[10px] shadow">
+        <div className="bg-[var(--card)] border-b border-[var(--border)] px-3 py-1.5 font-medium text-[var(--muted)] flex items-center gap-2">
+          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-green-500 text-white font-bold text-[9px]">✓</span>
+          Элемент стал дочерним (видно в панели «Слои»)
+        </div>
+        <div className="flex bg-slate-100 dark:bg-slate-900">
+          {/* Слои */}
+          <div className="w-28 shrink-0 border-r border-[var(--border)] bg-[var(--card)] p-2 space-y-0.5">
+            <p className="font-semibold text-[var(--foreground)]">Слои</p>
+            <div className="flex items-center gap-1 rounded bg-[var(--background)] px-1 py-0.5">
+              <span>▼</span> Контейнер
+            </div>
+            <div className="ml-3 flex items-center gap-1 rounded bg-brand-50 border border-brand-200 px-1 py-0.5 text-brand-700 dark:bg-brand-900/30 dark:border-brand-800 dark:text-brand-300">
+              └ Текст
+            </div>
+          </div>
+          {/* Холст */}
+          <div className="flex flex-1 items-center justify-center p-4">
+            <div className="w-full max-w-[120px] rounded-lg border-2 border-dashed border-slate-300 bg-white p-2 dark:bg-slate-950">
+              <p className="font-medium text-slate-700 dark:text-slate-200">Новый текст</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function MockBorderClear() {
+  return (
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 text-xs space-y-3">
+      <p className="font-semibold text-[var(--foreground)]">Панель «Границы»</p>
+      <div className="space-y-2">
+        <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-2">
+          <div className="flex items-center justify-between">
+            <span className="font-medium">Граница (все стороны)</span>
+          </div>
+          <div className="mt-1.5 flex flex-wrap gap-1">
+            {["none", "1px solid #e2e8f0", "2px solid #0c8ce9"].map((p) => (
+              <span
+                key={p}
+                className={`rounded px-1.5 py-0.5 text-[9px] border ${
+                  p === "none"
+                    ? "bg-brand-600 text-white border-brand-600"
+                    : "border-[var(--border)] text-[var(--muted)]"
+                }`}
+              >
+                {p}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-2">
+          <span className="font-medium">Стиль границы</span>
+          <div className="mt-1 rounded border border-[var(--border)] bg-[var(--card)] px-2 py-1">
+            Нет ▾
+          </div>
+        </div>
+      </div>
+      <p className="text-[var(--muted)] leading-snug">
+        Нажмите пресет <strong>none</strong> или выберите «Нет» в стиле — рамка исчезнет
+      </p>
     </div>
   );
 }
